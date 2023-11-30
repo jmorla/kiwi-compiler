@@ -24,7 +24,7 @@ Kiwi aims to streamline the process of incorporating React components into Java-
     @import('./components/Button', 'Button')
 </head>
 <body>
-    @render('<Button variant="primary" text="Hello world"/>')
+    @render(<Button variant="primary" text="Hello world"/>)
 </body>
 </html>
 ```
@@ -40,7 +40,7 @@ Kiwi aims to streamline the process of incorporating React components into Java-
     <script defer src="/sample.bundle.js"></script>
 </head>
 <body>
-<div id="button-2494b5a1" data-prop-variant="primary" data-prop-text="Hello world"></div>
+<div data-kiwi-id="button-2494b5a1" data-prop-variant="primary" data-prop-text="Hello world"></div>
 </body>
 </html>
 ```
