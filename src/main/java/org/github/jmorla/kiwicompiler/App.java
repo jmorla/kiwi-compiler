@@ -7,11 +7,7 @@ import java.io.StringReader;
  */
 public class App {
     public static void main(String[] args) {
-        var reader = new StringReader("""
-                   @render(<VideoCard variant='primary'>
-                                <Item value="Hello world"/>
-                           </VideoCard>) pupupupupu jefrey klk
-                """);
+        var reader = new StringReader("@render((()");
         var kiwiScanner = new KiwiScanner(reader);
         var tokens = kiwiScanner.scanTokens();
         tokens.stream().map(e -> e.type() + ": " + e.lexeme())
