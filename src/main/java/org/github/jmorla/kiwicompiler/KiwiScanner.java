@@ -209,6 +209,7 @@ public class KiwiScanner {
 
     private void reset() {
         try {
+            column --;
             source.reset();
         } catch (IOException ex) {
             throw new ScannerException(ex, line);
