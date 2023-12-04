@@ -12,5 +12,6 @@ public enum TokenType {
     //keywords
     IMPORT, RENDER,
     // end of file
-    EOF
+    EOF,
+    NONE
 }
