@@ -19,12 +19,16 @@ Kiwi aims to streamline the process of incorporating React components into Java-
 <html lang="en">
 <head>
     <title>Kiwi | Sample</title>
-    <link rel="stylesheet" href="/sample.bundle.css">
-    <script defer src="/sample.bundle.js"></script>
     @import('./components/Button', 'Button')
+    <script @import="./components/Button" @as="Button"></script> <!--experimental-->
 </head>
 <body>
     @render(<Button variant="primary" text="Hello world"/>)
+    <div 
+        @component="Button"
+        @variant="primary" 
+        @text="Hello world">
+    </div> <!--experimental-->
 </body>
 </html>
 ```
@@ -37,24 +41,24 @@ Kiwi aims to streamline the process of incorporating React components into Java-
 <head>
     <title>Kiwi | Sample</title>
     <link rel="stylesheet" href="/sample.bundle.css">
+    <script defer src="/react.bundle.js"></script>
     <script defer src="/sample.bundle.js"></script>
 </head>
 <body>
-<div data-kiwi-id="button-2494b5a1" data-prop-variant="primary" data-prop-text="Hello world"></div>
+    <div data-kiwi-id="button-2494b5a1" 
+        data-prop-variant="primary" 
+        data-prop-text="Hello world">
+    </div>
 </body>
 </html>
 ```
 
 
-### generated javascript
-```javascript
-import { createRoot } from 'react-dom/client';
-import Button from './components/Button';
-
-const button2494b5a1Node = document.getElementById('button-2494b5a1');
-const button2494b5a1Root = createRoot(button2494b5a1Node);
-
-button2494b5a1Root.render(<Button variant={button2494b5a1Node.getAttribute('data-prop-variant')} text={button2494b5a1Node.getAttribute('data-prop-text')} />)
+### generated bundle
+```bash
+/path/to/compiled/react.bundle.js
+/path/to/compiled/sample.bundle.js
+/path/to/compiled/sample.bundle.css
 ```
 
 

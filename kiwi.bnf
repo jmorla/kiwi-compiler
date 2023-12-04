@@ -1,0 +1,19 @@
+compilationUnit ::= (statement | statement*)?
+
+statement ::= TEXT? ( importstatement | renderstatement ) TEXT?
+
+importstatement ::= @import ( STRING ) 
+                 | @import ( STRING , STRING )
+
+
+renderstatement ::= @render ( tagExpresssion )
+
+tagExpresssion ::= < IDENTIFIER argumentsExpression? /> 
+                 | < IDENTIFIER argumentsExpression? > 
+                        (tagExpresssion | tagExpresssion*)? 
+                   </ IDENTIFIER > 
+
+
+argumentsExpression ::= (argumentExpression | argumentExpression*)
+
+argumentExpression ::= IDENTIFIER | IDENTIFIER = STRING
