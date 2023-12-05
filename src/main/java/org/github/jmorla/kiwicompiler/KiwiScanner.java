@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.github.jmorla.kiwicompiler.TokenType.*;
+import static org.github.jmorla.kiwicompiler.KiwiToken.TokenType.*;
 
 /**
  * Kiwi default Scanner
@@ -17,13 +17,13 @@ import static org.github.jmorla.kiwicompiler.TokenType.*;
  * */
 public class KiwiScanner {
     private final Reader source;
-    private final List<Token> tokens = new ArrayList<>();
+    private final List<KiwiToken> tokens = new ArrayList<>();
     private int column = 0;
     private int line = 1;
     private boolean expression = false;
     private final StringBuilder text = new StringBuilder();
 
-    private static final Map<String, TokenType> keywords;
+    private static final Map<String, KiwiToken.TokenType> keywords;
 
     static {
         keywords = new HashMap<>();
@@ -39,7 +39,7 @@ public class KiwiScanner {
         }
     }
 
-    public List<Token> scanTokens() {
+    public List<KiwiToken> scanTokens() {
         int c;
         while (!isEOF(c = readNext())) {
             if(c == '@') {
@@ -52,7 +52,7 @@ public class KiwiScanner {
             }
         }
         if(!text.isEmpty()) {
-            addToken(TokenType.TEXT, text.toString());
+            addToken(TEXT, text.toString());
         }
 
         return tokens;
@@ -64,21 +64,21 @@ public class KiwiScanner {
                 addKeywordToken(c);
                 break;
             case '(':
-                addToken(TokenType.LEFT_PAREN, String.valueOf(c));
+                addToken(LEFT_PAREN, String.valueOf(c));
                 break;
             case ')':
-                addToken(TokenType.RIGHT_PAREN, String.valueOf(c));
+                addToken(RIGHT_PAREN, String.valueOf(c));
                 text.setLength(0);
                 expression = false;
                 break;
             case ',':
-                addToken(TokenType.COMMA, String.valueOf(c));
+                addToken(COMMA, String.valueOf(c));
                 break;
             case '-':
-                addToken(TokenType.MINUS, String.valueOf(c));
+                addToken(MINUS, String.valueOf(c));
                 break;
             case '>':
-                addToken(TokenType.GREATER_THAN, String.valueOf(c));
+                addToken(GREATER_THAN, String.valueOf(c));
                 break;
             case '<':
                 var next = (char) readNext();
@@ -88,10 +88,10 @@ public class KiwiScanner {
                 } else {
                     reset();
                 }
-                addToken(TokenType.LOWER_THAN, String.valueOf(c));
+                addToken(LOWER_THAN, String.valueOf(c));
                 break;
             case '=':
-                addToken(TokenType.EQUAL, String.valueOf(c));
+                addToken(EQUAL, String.valueOf(c));
                 break;
             case '/':
                 next = (char) readNext();
@@ -146,7 +146,7 @@ public class KiwiScanner {
         String value = sb.toString();
         if(keywords.containsKey(value)) {
             if(!text.isEmpty()) {
-                addToken(TokenType.TEXT, text.toString());
+                addToken(TEXT, text.toString());
                 text.setLength(0);
             }
             addToken(keywords.get(value), value);
@@ -187,8 +187,8 @@ public class KiwiScanner {
         addToken(STRING, sb.toString());
     }
 
-    private void addToken(TokenType type, String lexeme) {
-        tokens.add(new Token(type, lexeme, line, column));
+    private void addToken(KiwiToken.TokenType type, String lexeme) {
+        tokens.add(new KiwiToken(type, lexeme, line, column));
     }
 
     private int readNext() {

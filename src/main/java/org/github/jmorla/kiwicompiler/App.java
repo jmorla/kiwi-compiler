@@ -7,7 +7,7 @@ import java.io.StringReader;
  */
 public class App {
     public static void main(String[] args) {
-        var reader = new StringReader("@render((()");
+        var reader = new StringReader("@render()");
         var kiwiScanner = new KiwiScanner(reader);
         var tokens = kiwiScanner.scanTokens();
         tokens.stream().map(e -> e.type() + ": " + e.lexeme())

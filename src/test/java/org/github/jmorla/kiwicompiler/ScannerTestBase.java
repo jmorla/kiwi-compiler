@@ -5,37 +5,37 @@ import org.junit.jupiter.api.Assertions;
 import java.io.StringReader;
 import java.util.List;
 
-import static org.github.jmorla.kiwicompiler.TokenType.*;
+import static org.github.jmorla.kiwicompiler.KiwiToken.TokenType.*;
 
 public class ScannerTestBase {
 
-    protected static List<Token> scan(String template) {
+    protected static List<KiwiToken> scan(String template) {
         var reader = reader(template);
         var scanner = new KiwiScanner(reader);
         return scanner.scanTokens();
     }
 
-    protected static void assertSize(List<Token> tokens, int size) {
+    protected static void assertSize(List<KiwiToken> tokens, int size) {
         Assertions.assertEquals(size, tokens.size());
     }
 
-    protected static void assertIdentifierToken(Token token, String lexeme){
+    protected static void assertIdentifierToken(KiwiToken token, String lexeme){
         assertToken(token, IDENTIFIER, lexeme);
     }
 
-    protected static void assertTextToken(Token token, String lexeme) {
+    protected static void assertTextToken(KiwiToken token, String lexeme) {
         assertToken(token, TEXT, lexeme);
     }
 
-    protected static void assertRenderToken(Token token) {
+    protected static void assertRenderToken(KiwiToken token) {
         assertToken(token, RENDER, "render");
     }
 
-    protected static void assertImportToken(Token token) {
+    protected static void assertImportToken(KiwiToken token) {
         assertToken(token, IMPORT, "import");
     }
 
-    protected static void assertToken(Token token, TokenType type, String lexeme) {
+    protected static void assertToken(KiwiToken token, KiwiToken.TokenType type, String lexeme) {
         Assertions.assertEquals(lexeme, token.lexeme());
         Assertions.assertEquals(type, token.type());
     }
