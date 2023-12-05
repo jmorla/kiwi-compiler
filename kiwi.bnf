@@ -1,19 +1,26 @@
-compilationUnit ::= (statement | statement*)?
+compilationUnit ::= (directive | directive*)?;
 
-statement ::= TEXT? ( importstatement | renderstatement ) TEXT?
+directive ::= TEXT? ( importDirective | renderDirective ) TEXT?
 
-importstatement ::= @import ( STRING ) 
-                 | @import ( STRING , STRING )
-
-
-renderstatement ::= @render ( tagExpresssion )
-
-tagExpresssion ::= < IDENTIFIER argumentsExpression? /> 
-                 | < IDENTIFIER argumentsExpression? > 
-                        (tagExpresssion | tagExpresssion*)? 
-                   </ IDENTIFIER > 
+importDirective ::= '@import' '(' STRING ')'
+                 | '@import' '(' STRING ',' STRING ')';
 
 
-argumentsExpression ::= (argumentExpression | argumentExpression*)
+renderDirective ::= '@render' '(' kiwiElement ')';
 
-argumentExpression ::= IDENTIFIER | IDENTIFIER = STRING
+kiwiElement ::= selfClosingElement
+        | startTag
+            childrenElements
+          endTag;
+
+startTag ::= '<' IDENTIFIER attributes? '>';
+
+endTag ::= '</' IDENTIFIER '>';
+
+selfClosingElement ::= '<' IDENTIFIER attributes? '/>';
+
+childrenElements ::= (kiwiElement | kiwiElement*)?;
+
+attributes ::= (attribute | attribute*);
+
+attribute ::= IDENTIFIER | IDENTIFIER '=' STRING;
