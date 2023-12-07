@@ -21,7 +21,7 @@ Kiwi aims to streamline the process of incorporating React components into Java-
     <title>Kiwi | Sample</title>
     @import('./components/UserDetailsForm', 'UserDetailsForm')
     <!--experimental-->
-    <script @import="./components/UserDetailsForm" @as="UserDetailsForm"></script> 
+    <script @import="./components/UserDetailsForm" as="UserDetailsForm"></script> 
 </head>
 <body>
     {{#user}}
@@ -55,7 +55,6 @@ Kiwi aims to streamline the process of incorporating React components into Java-
 
 ### generated bundle
 ```bash
-/path/to/compiled/react.bundle.js
 /path/to/compiled/sample.bundle.js
 /path/to/compiled/sample.bundle.css
 ```
