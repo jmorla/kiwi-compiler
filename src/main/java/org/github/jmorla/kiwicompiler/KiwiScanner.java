@@ -49,6 +49,7 @@ public class KiwiScanner {
                 scanExpressionToken((char) c);
             } else {
                 text.append((char) c);
+                updateCursor((char) c);
             }
         }
         if(!text.isEmpty()) {
@@ -111,8 +112,7 @@ public class KiwiScanner {
             case '\t':
                 break;
             case '\n':
-                line++;
-                column = 0;
+                updateCursor(c);
                 break;
             default:
                 if (isAlphabet(c)) {
@@ -127,6 +127,14 @@ public class KiwiScanner {
         return (c >= 'a' && c <= 'z') ||
                 (c >= 'A' && c <= 'Z') ||
                 c == '_';
+    }
+
+    public void updateCursor(char c) {
+        column ++;
+        if(c == '\n') {
+            column = 0;
+            line ++;
+        }
     }
 
     private boolean isDigit(char c) {

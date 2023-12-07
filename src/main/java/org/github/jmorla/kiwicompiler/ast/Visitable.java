@@ -1,8 +1,11 @@
 package org.github.jmorla.kiwicompiler.ast;
 
-import org.github.jmorla.kiwicompiler.visitor.GenericVisitor;
+import org.github.jmorla.kiwicompiler.visitor.Visitor;
+import org.github.jmorla.kiwicompiler.visitor.VoidVisitor;
 
 public interface Visitable {
 
-    public abstract <R> R accept(GenericVisitor<R> visitor);
+    <R> R accept(Visitor<R> visitor);
+
+    void accept(VoidVisitor visitor);
 }

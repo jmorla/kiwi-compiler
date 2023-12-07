@@ -1,12 +1,17 @@
 package org.github.jmorla.kiwicompiler;
 
-import org.github.jmorla.kiwicompiler.ast.CompilationUnit;
-import org.github.jmorla.kiwicompiler.ast.directive.ImportDirective;
-import org.github.jmorla.kiwicompiler.ast.directive.RenderDirective;
+import org.github.jmorla.kiwicompiler.ast.Attribute;
+import org.github.jmorla.kiwicompiler.ast.SyntaxTree;
+import org.github.jmorla.kiwicompiler.ast.KiwiElement;
+import org.github.jmorla.kiwicompiler.ast.Segment;
+
+
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.github.jmorla.kiwicompiler.KiwiToken.TokenType.*;
-
-import java.util.List;
 
 /**
  * Default Kiwi Recursive decent parser
@@ -15,44 +20,127 @@ public class KiwiParser {
 
     private final List<KiwiToken> tokens;
 
-    private int index;
+    private int index = 0;
 
-    private KiwiParser(List<KiwiToken> tokens) {
-        this.tokens = tokens;
+    public KiwiParser(Reader reader) {
+        var scanner = new KiwiScanner(reader);
+        this.tokens = scanner.scanTokens();
+    }
+
+    public KiwiParser(String source) {
+        StringReader reader = new StringReader(source);
+        var scanner = new KiwiScanner(reader);
+        this.tokens = scanner.scanTokens();
     }
 
 
-    public CompilationUnit parse() {
-        return null;
+    public SyntaxTree parse() {
+        List<Segment> segments = new ArrayList<>();
+        while(hasNext()) {
+            segments.add(parseSegment());
+        }
+        if(segments.isEmpty()) {
+            return new SyntaxTree();
+        }
+        return new SyntaxTree(segments);
     }
 
-    private ImportDirective parseImportDirective() {
-        return null;
+    private Segment parseSegment () {
+        var token = next();
+        return switch (token.type()) {
+            case IMPORT -> parseImportDirective();
+            case RENDER -> parseRenderDirective();
+            case TEXT -> new Segment.TextSegment(token.lexeme());
+            default -> throw new ParseException("unexpected token at line: %d received: %s"
+                    .formatted(token.line(), token.lexeme()));
+        };
     }
 
-    private RenderDirective parseRenderDirective() {
-        return null;
+    private Segment.ImportDirective parseImportDirective() {
+        expect(LEFT_PAREN);
+        var arg0 = expect(STRING);
+        if(check(RIGHT_PAREN)) {
+            skip();
+            return new Segment.ImportDirective(arg0);
+        }
+        var comma = expect(COMMA);
+        var arg1 = expect(STRING);
+        expect(RIGHT_PAREN);
+        return new Segment.ImportDirective(arg0, comma, arg1);
     }
 
-    private KiwiToken peek() {
-        return tokens.get(index);
+    private Segment.RenderDirective parseRenderDirective() {
+        expect(LEFT_PAREN);
+        var element = parseKiwiElement();
+        expect(RIGHT_PAREN);
+
+        return new Segment.RenderDirective(element);
+    }
+
+    private KiwiElement parseKiwiElement() {
+        expect(LOWER_THAN);
+        var identifier = expect(IDENTIFIER);
+        var attributes = parseAttributes();
+        expect(SELF_CLOSING);
+        if(attributes.isEmpty()) {
+            return new KiwiElement(identifier);
+        }
+        return new KiwiElement(identifier, attributes);
+    }
+
+    private List<Attribute> parseAttributes() {
+        List<Attribute> attributes = new ArrayList<>();
+        while(!match(GREATER_THAN, SELF_CLOSING)) {
+            attributes.add(parseAttribute());
+        }
+        return attributes;
+    }
+
+    private Attribute parseAttribute() {
+        var identifier = expect(IDENTIFIER);
+        expect(EQUAL);
+        var literal = expect(STRING);
+        return new Attribute(identifier, literal);
+    }
+
+    private boolean hasNext() {
+        return tokens.size() > index;
     }
 
     private KiwiToken next() {
         return tokens.get(index ++);
     }
 
-    private boolean matchType(KiwiToken.TokenType... types) {
-        for(var type : types) {
-            if(isType(type)) {
+    private KiwiToken peek() {
+        return tokens.get(index);
+    }
+
+    private boolean match(KiwiToken.TokenType... types) {
+        for(KiwiToken.TokenType type : types) {
+            if(check(type)) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean isType(KiwiToken.TokenType type) {
-        var current = peek();
-        return current.type().equals(type);
+    private boolean check(KiwiToken.TokenType type) {
+        return type.equals(peek().type());
+    }
+
+    private void skip() {
+        index ++;
+    }
+
+    private String expect(KiwiToken.TokenType type) {
+        if(!hasNext()) {
+            throw new ParseException("Unexpected token: EOF");
+        }
+        var token = next();
+        if(!type.equals(token.type())) {
+            throw new ParseException("Unexpected token: \"%s\" at line %d expected \"%s\""
+                    .formatted(token.lexeme(),token.line(), type.name));
+        }
+        return token.lexeme();
     }
 }
