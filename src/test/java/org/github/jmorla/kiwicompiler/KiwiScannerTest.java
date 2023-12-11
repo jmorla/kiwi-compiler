@@ -61,4 +61,12 @@ public class KiwiScannerTest extends ScannerTestBase {
         assertSize(tokens, 2);
         assertIdentifierToken(tokens.get(1), lexeme);
     }
+
+    @Test
+    public void shouldScanAttributeType() {
+        var tokens = scan("@render bar:bool");
+        for(var token: tokens) {
+            System.out.println(token);
+        }
+    }
 }

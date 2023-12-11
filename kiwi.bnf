@@ -2,8 +2,8 @@ compilationUnit ::= (segment | segment*)?;
 
 segment ::= TEXT | importDirective | renderDirective;
 
-importDirective ::= '@import' '(' STRING ')'
-                 | '@import' '(' STRING ',' STRING ')';
+importDirective ::= '@import' '(' LITERAL ')'
+                 | '@import' '(' LITERAL ',' LITERAL ')';
 
 
 renderDirective ::= '@render' '(' kiwiElement ')';
@@ -29,4 +29,6 @@ childrenElements ::= (kiwiElement | kiwiElement*)?;
 
 attributes ::= (attribute | attribute*);
 
-attribute ::=  IDENTIFIER '=' STRING;
+attribute ::=  (IDENTIFIER ':' type) '=' LITERAL;
+
+type ::= ('bool' | 'num')

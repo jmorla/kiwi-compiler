@@ -58,13 +58,13 @@ public class KiwiParser {
 
     private Segment.ImportDirective parseImportDirective() {
         expect(LEFT_PAREN);
-        var arg0 = expect(STRING);
+        var arg0 = expect(LITERAL);
         if(check(RIGHT_PAREN)) {
             skip();
             return new Segment.ImportDirective(arg0);
         }
         var comma = expect(COMMA);
-        var arg1 = expect(STRING);
+        var arg1 = expect(LITERAL);
         expect(RIGHT_PAREN);
         return new Segment.ImportDirective(arg0, comma, arg1);
     }
@@ -98,9 +98,14 @@ public class KiwiParser {
 
     private Attribute parseAttribute() {
         var identifier = expect(IDENTIFIER);
+        String type = "string";
+        if(check(COLON)) {
+            skip();
+            type = expect(TYPE);
+        }
         expect(EQUAL);
-        var literal = expect(STRING);
-        return new Attribute(identifier, literal);
+        var literal = expect(LITERAL);
+        return new Attribute(identifier, type, literal);
     }
 
     private boolean hasNext() {

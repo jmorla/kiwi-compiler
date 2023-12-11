@@ -4,7 +4,7 @@ import org.github.jmorla.kiwicompiler.ast.*;
 
 public class JsonTreeMapper implements VoidVisitor {
 
-    private StringBuilder json = new StringBuilder();
+    private final StringBuilder json = new StringBuilder();
 
 
     public String getJsonString() {
@@ -79,7 +79,7 @@ public class JsonTreeMapper implements VoidVisitor {
     @Override
     public void visit(Attribute n) {
         json.append('{')
-                .append("\"name\": \"%s\", \"value\":\"%s\"".formatted(n.identifier(), n.value()))
+                .append("\"name\": \"%s\",\"value\":\"%s\",\"type\":\"%s\"".formatted(n.identifier(), n.value(), n.type()))
                 .append('}');
     }
 }

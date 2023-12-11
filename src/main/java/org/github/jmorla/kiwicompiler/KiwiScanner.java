@@ -3,10 +3,7 @@ package org.github.jmorla.kiwicompiler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.github.jmorla.kiwicompiler.KiwiToken.TokenType.*;
 
@@ -24,11 +21,14 @@ public class KiwiScanner {
     private final StringBuilder text = new StringBuilder();
 
     private static final Map<String, KiwiToken.TokenType> keywords;
+    private static final Set<String> types;
 
     static {
         keywords = new HashMap<>();
         keywords.put("import", IMPORT);
         keywords.put("render", RENDER);
+
+        types = Set.of("num", "bool", "string");
     }
 
     public KiwiScanner(Reader source) {
@@ -75,9 +75,6 @@ public class KiwiScanner {
             case ',':
                 addToken(COMMA, String.valueOf(c));
                 break;
-            case '-':
-                addToken(MINUS, String.valueOf(c));
-                break;
             case '>':
                 addToken(GREATER_THAN, String.valueOf(c));
                 break;
@@ -93,6 +90,10 @@ public class KiwiScanner {
                 break;
             case '=':
                 addToken(EQUAL, String.valueOf(c));
+                break;
+            case ':':
+                addToken(COLON, String.valueOf(c));
+                addTypeToken();
                 break;
             case '/':
                 next = (char) readNext();
@@ -115,7 +116,7 @@ public class KiwiScanner {
                 updateCursor(c);
                 break;
             default:
-                if (isAlphabet(c)) {
+                if (isAlphabet(c) || c == '_') {
                     addIdentifierToken(c);
                     break;
                 }
@@ -123,10 +124,24 @@ public class KiwiScanner {
         }
     }
 
+    private void addTypeToken() {
+        StringBuilder sb = new StringBuilder();
+
+        while (isAlphaNumeric((char) peek())) {
+            sb.append((char) readNext());
+        }
+
+        var value = sb.toString();
+        if(types.contains(value)) {
+            addToken(TYPE, value);
+        } else {
+            addToken(IDENTIFIER, value);
+        }
+    }
+
     private boolean isAlphabet(char c) {
         return (c >= 'a' && c <= 'z') ||
-                (c >= 'A' && c <= 'Z') ||
-                c == '_';
+                (c >= 'A' && c <= 'Z');
     }
 
     public void updateCursor(char c) {
@@ -142,7 +157,7 @@ public class KiwiScanner {
     }
 
     private boolean isAlphaNumeric(char c) {
-        return isAlphabet(c) || isDigit(c);
+        return isAlphabet(c) || isDigit(c) || c == '_';
     }
 
     private void addKeywordToken(char c) {
@@ -192,7 +207,7 @@ public class KiwiScanner {
             throw new ScannerException("Undermined string");
         }
 
-        addToken(STRING, sb.toString());
+        addToken(LITERAL, sb.toString());
     }
 
     private void addToken(KiwiToken.TokenType type, String lexeme) {
