@@ -20,14 +20,13 @@ Kiwi aims to streamline the process of incorporating React components into Java-
 <head>
     <title>Kiwi | Sample</title>
     @import('./components/UserDetailsForm', 'UserDetailsForm')
-    <!--experimental-->
-    <script @import="./components/UserDetailsForm" as="UserDetailsForm"></script> 
 </head>
 <body>
     {{#user}}
-    @render(<UserDetailsForm userId="{{id}}" />)
-    <!--experimental-->
-    <div @component="UserDetailsForm" userId="{{id}}"></div>
+    @render(<UserDetailsForm 
+              id:num="{{id}}" 
+              title="User {{name}}" 
+              validated:bool="true" />)
     {{/user}}
 </body>
 </html>
@@ -41,12 +40,14 @@ Kiwi aims to streamline the process of incorporating React components into Java-
 <head>
     <title>Kiwi | Sample</title>
     <link rel="stylesheet" href="/sample.bundle.css">
-    <script defer src="/react.bundle.js"></script>
     <script defer src="/sample.bundle.js"></script>
 </head>
 <body>
     {{#user}}
-    <div data-kiwi-id="UserDetailsForm-2494b5a1" data-prop-userId="{{id}}"></div>
+    <div data-kiwi-id="UserDetailsForm-2494b5a1" 
+         data-prop-id="{{id}}" 
+         data-prop-title="User {{name}}" 
+         data-prop-validated="true"></div>
     {{/user}}
 </body>
 </html>
