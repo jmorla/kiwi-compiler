@@ -1,34 +1,15 @@
 package org.github.jmorla.kiwicompiler.ast;
 
-import org.github.jmorla.kiwicompiler.visitor.Visitor;
 import org.github.jmorla.kiwicompiler.visitor.VoidVisitor;
-
-import java.util.Objects;
 
 public sealed abstract class Segment implements Visitable
         permits Segment.TextSegment, Segment.ImportDirective, Segment.RenderDirective {
 
-    @Override
-    public <R> R accept(Visitor<R> visitor) {
-        return visitor.visit(this);
-    }
-
-    @Override
-    public void accept(VoidVisitor visitor) {
-        visitor.visit(this);
-    }
-
     public static final class TextSegment extends Segment {
-
         private final String text;
 
         public TextSegment(String text) {
             this.text = text;
-        }
-
-        @Override
-        public <R> R accept(Visitor<R> visitor) {
-            return visitor.visit(this);
         }
 
         @Override
@@ -43,27 +24,23 @@ public sealed abstract class Segment implements Visitable
 
     public static final class ImportDirective extends Segment {
 
+        private boolean singleArg;
         private final String arg0;
-        private final String comma;
         private final String arg1;
 
         public ImportDirective(String arg0) {
-            this(arg0, null, null);
+            this(arg0, null);
+            singleArg = true;
         }
 
-        public ImportDirective(String arg0, String comma, String arg1) {
+        public ImportDirective(String arg0, String arg1) {
             this.arg0 = arg0;
             this.arg1 = arg1;
-            this.comma = comma;
+            this.singleArg = false;
         }
 
         public boolean hasSingleArg() {
-            return Objects.isNull(comma);
-        }
-
-        @Override
-        public <R> R accept(Visitor<R> visitor) {
-            return visitor.visit(this);
+            return singleArg;
         }
 
         @Override
@@ -73,10 +50,6 @@ public sealed abstract class Segment implements Visitable
 
         public String arg0() {
             return arg0;
-        }
-
-        public String comma() {
-            return comma;
         }
 
         public String arg1() {
@@ -93,13 +66,10 @@ public sealed abstract class Segment implements Visitable
         }
 
         @Override
-        public <R> R accept(Visitor<R> visitor) {
-            return visitor.visit(this);
-        }
-
-        @Override
         public void accept(VoidVisitor visitor) {
             visitor.visit(this);
+            System.out.println("Heey");
+            visitor.visit(element);
         }
 
         public KiwiElement element() {

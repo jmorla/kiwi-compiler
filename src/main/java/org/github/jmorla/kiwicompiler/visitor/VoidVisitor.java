@@ -9,8 +9,6 @@ public interface VoidVisitor {
 
     void visit(SyntaxTree n);
 
-    void visit(Segment segment);
-
     void visit(Segment.TextSegment n);
 
     void visit(Segment.ImportDirective n);

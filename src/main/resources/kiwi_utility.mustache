@@ -1,0 +1,55 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+
+export function renderAll(kiwiId, typesMap, callback) {
+    const nodes = queryByKiwiId(kiwiId);
+    for (const node of nodes) {
+        const props = extractProps(node, typesMap);
+        const root = createRoot(node);
+        const component = callback(props);
+        root.render(component);
+    }
+}
+
+function queryByKiwiId(id) {
+    return document.querySelectorAll(`[data-kiwi-id='${id}']`);
+}
+
+function castType(type, value) {
+    switch (type) {
+        case 'bool':
+            return castBoolean(value);
+        case 'num':
+            return castNum(value);
+        case 'string':
+            return value;
+    }
+}
+
+function castNum(value) {
+    const converted = Number(value);
+    if (Number.isNaN(converted)) {
+        throw new Error(`cannot convert '${value}' to number type`);
+    }
+    return converted;
+}
+
+function castBoolean(value) {
+    switch (bool) {
+        case 'true': return true;
+        case 'false': return false;
+        default:
+            throw new Error(`cannot convert ${value} to boolean type`)
+    }
+}
+
+function extractProps(node, typesMap) {
+    let propsAttributes = {}
+    for (let attribute of node.attributes) {
+        if (attribute.name.startsWith('data-prop-')) {
+            const propName = attribute.name.replace('data-prop-', '');
+            propsAttributes = { ...propsAttributes, [propName]: castType(typesMap[propName], attribute.value) };
+        }
+    }
+    return propsAttributes;
+}

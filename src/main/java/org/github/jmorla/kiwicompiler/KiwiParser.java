@@ -63,10 +63,10 @@ public class KiwiParser {
             skip();
             return new Segment.ImportDirective(arg0);
         }
-        var comma = expect(COMMA);
+        expect(COMMA);
         var arg1 = expect(LITERAL);
         expect(RIGHT_PAREN);
-        return new Segment.ImportDirective(arg0, comma, arg1);
+        return new Segment.ImportDirective(arg0, arg1);
     }
 
     private Segment.RenderDirective parseRenderDirective() {

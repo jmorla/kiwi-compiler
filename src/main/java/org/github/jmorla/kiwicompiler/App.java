@@ -1,18 +1,19 @@
 package org.github.jmorla.kiwicompiler;
 
-import org.github.jmorla.kiwicompiler.ast.SyntaxTree;
-import org.github.jmorla.kiwicompiler.visitor.JsonTreeMapper;
+import org.github.jmorla.kiwicompiler.visitor.TestVisitor;
+
+import java.io.StringReader;
 
 /**
  * Hello world!
  */
 public class App {
     public static void main(String[] args) {
-        var parser = new KiwiParser("""
+        var reader = new StringReader("""
                 <html>
                 <head>
                     @import('UserDetailsForm')
-                    @import('./components/EmptyState', 'EmptyState')
+                    @import('EmptyState', './components/EmptyState')
                 <head>
                 <body>
                    {{#user}}
@@ -24,16 +25,9 @@ public class App {
                 </body>
                 </html>
                 """);
+
+        var parser = new KiwiParser(reader);
         var tree = parser.parse();
-        var json = toJson(tree);
-
-        System.out.println(json);
-
-    }
-
-    private static String toJson(SyntaxTree tree) {
-        var mapper = new JsonTreeMapper();
-        tree.accept(mapper);
-        return mapper.getJsonString();
+        tree.accept(new TestVisitor());
     }
 }

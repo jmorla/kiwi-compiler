@@ -1,0 +1,22 @@
+/**
+ * Copyright Kiwi Authors.
+ *
+ * This project is licensed under the MIT License. Feel free to explore, use, and contribute to Kiwi!
+ *
+ * Kiwi Generated source
+ * target: {{targetTemplatePath}}
+ * source: {{sourcePath}}
+ *
+*/
+import React from 'react';
+{{#componentImports}}
+import {{name}} from '{{path}}';
+{{/componentImports}}
+import { renderAll } from '{{utilityPath}}';
+
+{{#components}}
+// handles {{name}}
+const {{name}}TypesMap = {{propsTypes}};
+
+renderAll('{{name}}', {{name}}TypesMap, (props) => <{{type}} {...props} />);
+{{/components}}
