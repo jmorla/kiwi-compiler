@@ -1,15 +1,14 @@
 package org.github.jmorla.kiwicompiler;
 
-import org.github.jmorla.kiwicompiler.ast.Attribute;
-import org.github.jmorla.kiwicompiler.ast.SyntaxTree;
-import org.github.jmorla.kiwicompiler.ast.KiwiElement;
-import org.github.jmorla.kiwicompiler.ast.Segment;
+import org.github.jmorla.kiwicompiler.ast.*;
 
 
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.github.jmorla.kiwicompiler.KiwiToken.TokenType.*;
 
@@ -22,9 +21,10 @@ public class KiwiParser {
 
     private int index = 0;
 
-    public KiwiParser(Reader reader) {
-        var scanner = new KiwiScanner(reader);
-        this.tokens = scanner.scanTokens();
+    private Set<String> symbols = new HashSet<>();
+
+    public KiwiParser(List<KiwiToken> tokens) {
+        this.tokens = tokens;
     }
 
     public KiwiParser(String source) {
@@ -59,6 +59,7 @@ public class KiwiParser {
     private Segment.ImportDirective parseImportDirective() {
         expect(LEFT_PAREN);
         var arg0 = expect(LITERAL);
+        symbols.add(arg0);
         if(check(RIGHT_PAREN)) {
             skip();
             return new Segment.ImportDirective(arg0);
@@ -80,6 +81,9 @@ public class KiwiParser {
     private KiwiElement parseKiwiElement() {
         expect(LOWER_THAN);
         var identifier = expect(IDENTIFIER);
+        if(!symbols.contains(identifier)) {
+            throw new ParseException("cannot find symbol: <" + identifier + " />");
+        }
         var attributes = parseAttributes();
         expect(SELF_CLOSING);
         if(attributes.isEmpty()) {
@@ -105,7 +109,7 @@ public class KiwiParser {
         }
         expect(EQUAL);
         var literal = expect(LITERAL);
-        return new Attribute(identifier, type, literal);
+        return new Attribute(identifier, Attribute.AttributeType.of(type), literal);
     }
 
     private boolean hasNext() {
