@@ -14,41 +14,23 @@ Kiwi aims to streamline the process of incorporating React components into Java-
 
 
 ### template html
-```html
-<!doctype html>
-<html lang="en">
-<head>
-    <title>Kiwi | Sample</title>
-    @import('./components/UserDetailsForm', 'UserDetailsForm')
-</head>
-<body>
-    {{#user}}
-    @render(<UserDetailsForm 
-              id:num="{{id}}" 
-              title="User {{name}}" 
-              validated:bool="true" />)
-    {{/user}}
-</body>
-</html>
+```java
+var source = """
+        @import('Greeting', './components/Greeting')
+        @render(<Greeting message="Hello {{name}}!" value:num="10" />)
+        @render(<Greeting message="Hello Strange" clickable:bool="true" />)
+        """;
+
+var compiler = KiwiGenerator.withDefault();
+String output = compiler.generateJs(source);
+String htmlOutput = compiler.generateHtml(source);
 ```
 
 
 ### generated html
 ```html
-<!doctype html>
-<html lang="en">
-<head>
-    <title>Kiwi | Sample</title>
-</head>
-<body>
-{{#user}}
-<div data-kiwi-id="UserDetailsForm575792396" 
-     data-prop-id="{{id}}" 
-     data-prop-title="User {{name}}" 
-     data-prop-validated="true"></div>
-{{/user}}
-</body>
-</html>
+<div data-kiwi-id="Greeting1111559717" data-prop-message="Hello {{name}}!" data-prop-value="10"></div>
+<div data-kiwi-id="Greeting626337202" data-prop-message="Hello Strange" data-prop-clickable="true"></div>
 ```
 
 
@@ -60,17 +42,26 @@ Kiwi aims to streamline the process of incorporating React components into Java-
 */
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import UserDetailsForm from './components/UserDetailsForm';
+import Greeting from './components/Greeting';
 
-const userdetailsform575792396_elements = document.querySelectorAll('[data-kiwi-id="UserDetailsForm575792396"]');
-for(let element of userdetailsform575792396_elements) {
+const greeting1111559717_elements = document.querySelectorAll('[data-kiwi-id="Greeting1111559717"]');
+for(let element of greeting1111559717_elements) {
 	const props = {
-		id: Number(element.getAttribute('data-prop-id')),
-		title: (element.getAttribute('data-prop-title')),
-		validated: 'true' == (element.getAttribute('data-prop-validated')),
+		message: (element.getAttribute('data-prop-message')),
+		value: Number(element.getAttribute('data-prop-value')),
 	};
 	const root = createRoot(element);
-	root.render(<UserDetailsForm {...props} />);
+	root.render(<Greeting {...props} />);
+}
+
+const greeting626337202_elements = document.querySelectorAll('[data-kiwi-id="Greeting626337202"]');
+for(let element of greeting626337202_elements) {
+	const props = {
+		message: (element.getAttribute('data-prop-message')),
+		clickable: 'true' == (element.getAttribute('data-prop-clickable')),
+	};
+	const root = createRoot(element);
+	root.render(<Greeting {...props} />);
 }
 ```
 
