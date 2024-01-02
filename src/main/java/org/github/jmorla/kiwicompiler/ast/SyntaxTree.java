@@ -1,6 +1,8 @@
 package org.github.jmorla.kiwicompiler.ast;
 
-import org.github.jmorla.kiwicompiler.visitor.VoidVisitor;
+
+import org.github.jmorla.kiwicompiler.visitor.SegmentVisitor;
+import org.github.jmorla.kiwicompiler.visitor.Visitable;
 
 import java.util.List;
 
@@ -20,19 +22,15 @@ public class SyntaxTree implements Visitable {
         return empty;
     }
 
-    @Override
-    public void accept(VoidVisitor visitor) {
-        visitor.visit(this);
-        for(var segment : segments) {
-            switch (segment) {
-                case Segment.ImportDirective i -> visitor.visit(i);
-                case Segment.TextSegment t -> visitor.visit(t);
-                case Segment.RenderDirective r -> visitor.visit(r);
-            }
-        }
-    }
 
     public List<Segment> segments() {
         return this.segments;
+    }
+
+    @Override
+    public void accept(SegmentVisitor visitor) {
+        for(var segment : segments) {
+            segment.accept(visitor);
+        }
     }
 }

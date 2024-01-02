@@ -1,8 +1,10 @@
 package org.github.jmorla.kiwicompiler;
 
-import org.github.jmorla.kiwicompiler.visitor.TestVisitor;
+import org.github.jmorla.kiwicompiler.generators.JsGenerator;
+import org.github.jmorla.kiwicompiler.generators.TemplateGenerator;
 
 import java.io.StringReader;
+import java.io.StringWriter;
 
 /**
  * Hello world!
@@ -10,24 +12,21 @@ import java.io.StringReader;
 public class App {
     public static void main(String[] args) {
         var reader = new StringReader("""
-                <html>
-                <head>
-                    @import('UserDetailsForm')
-                    @import('EmptyState', './components/EmptyState')
-                <head>
-                <body>
-                   {{#user}}
-                   @render(<UserDetailsForm id:num="{{id}}" validated:bool="true" title="User details" />)
-                   {{/user}}
-                   {{^user}}
-                   @render(<EmptyState message="{{message}}" size:num="5" showIcon:bool="true" />)
-                   {{/user}}
-                </body>
-                </html>
-                """);
+            @import('Info')
+            @render(<Info />)
+            """);
 
-        var parser = new KiwiParser(reader);
+        var scanner = new KiwiScanner(reader);
+        var parser = new KiwiParser(scanner.scanTokens());
+        var jsOutput = new StringWriter();
+        var templateOutput = new StringWriter();
+        var templateGenerator = new TemplateGenerator(templateOutput);
+        var jsGenerator = new JsGenerator(jsOutput);
         var tree = parser.parse();
-        tree.accept(new TestVisitor());
+        tree.accept(templateGenerator);
+        tree.accept(jsGenerator);
+        System.out.println(jsOutput);
+        System.out.println("----------------------------");
+        System.out.println(templateOutput);
     }
 }

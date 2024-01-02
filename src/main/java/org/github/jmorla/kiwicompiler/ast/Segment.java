@@ -1,6 +1,7 @@
 package org.github.jmorla.kiwicompiler.ast;
 
-import org.github.jmorla.kiwicompiler.visitor.VoidVisitor;
+import org.github.jmorla.kiwicompiler.visitor.SegmentVisitor;
+import org.github.jmorla.kiwicompiler.visitor.Visitable;
 
 public sealed abstract class Segment implements Visitable
         permits Segment.TextSegment, Segment.ImportDirective, Segment.RenderDirective {
@@ -13,7 +14,7 @@ public sealed abstract class Segment implements Visitable
         }
 
         @Override
-        public void accept(VoidVisitor visitor) {
+        public void accept(SegmentVisitor visitor) {
             visitor.visit(this);
         }
 
@@ -44,7 +45,7 @@ public sealed abstract class Segment implements Visitable
         }
 
         @Override
-        public void accept(VoidVisitor visitor) {
+        public void accept(SegmentVisitor visitor) {
             visitor.visit(this);
         }
 
@@ -66,10 +67,8 @@ public sealed abstract class Segment implements Visitable
         }
 
         @Override
-        public void accept(VoidVisitor visitor) {
+        public void accept(SegmentVisitor visitor) {
             visitor.visit(this);
-            System.out.println("Heey");
-            visitor.visit(element);
         }
 
         public KiwiElement element() {
