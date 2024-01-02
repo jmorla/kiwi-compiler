@@ -7,10 +7,10 @@ import java.io.PrintWriter;
 import java.io.Writer;
 
 
-public class TemplateGenerator implements SegmentVisitor, AutoCloseable {
+public class HtmlGenerator implements SegmentVisitor, AutoCloseable {
     private final PrintWriter out;
 
-    public TemplateGenerator(Writer writer) {
+    public HtmlGenerator(Writer writer) {
         out = new PrintWriter(writer);
     }
 

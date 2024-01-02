@@ -1,32 +1,30 @@
 package org.github.jmorla.kiwicompiler;
 
-import org.github.jmorla.kiwicompiler.generators.JsGenerator;
-import org.github.jmorla.kiwicompiler.generators.TemplateGenerator;
-
-import java.io.StringReader;
-import java.io.StringWriter;
-
 /**
  * Hello world!
  */
 public class App {
     public static void main(String[] args) {
-        var reader = new StringReader("""
-            @import('Info')
-            @render(<Info />)
-            """);
+        var compiler = new KiwiCompiler();
+        String output = compiler.compileJs("""
+                    <!doctype html>
+                    <html lang="en">
+                    <head>
+                        <title>Kiwi | Sample</title>
+                        @import('UserDetailsForm', './components/UserDetailsForm')
+                    </head>
+                    <body>
+                        {{#user}}
+                        @render(<UserDetailsForm\s
+                                  id:num="{{id}}"\s
+                                  title="User {{name}}"\s
+                                  validated:bool="true" />)
+                        {{/user}}
+                    </body>
+                    </html>
+                """);
 
-        var scanner = new KiwiScanner(reader);
-        var parser = new KiwiParser(scanner.scanTokens());
-        var jsOutput = new StringWriter();
-        var templateOutput = new StringWriter();
-        var templateGenerator = new TemplateGenerator(templateOutput);
-        var jsGenerator = new JsGenerator(jsOutput);
-        var tree = parser.parse();
-        tree.accept(templateGenerator);
-        tree.accept(jsGenerator);
-        System.out.println(jsOutput);
-        System.out.println("----------------------------");
-        System.out.println(templateOutput);
+        System.out.println(output);
+
     }
 }

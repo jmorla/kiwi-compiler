@@ -27,7 +27,7 @@ public class KiwiElement {
     }
 
     public boolean hasAttributes () {
-        return attributes != null && attributes.isEmpty();
+        return attributes != null && !attributes.isEmpty();
     }
 
     @Override
