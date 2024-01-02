@@ -11,7 +11,10 @@ public class App {
                 @render(<Greeting message="Hello Strange" clickable:bool="true" />)
                 """;
 
-        var compiler = KiwiGenerator.withDefault();
+        var compiler = KiwiGenerator.with()
+                .defaultImports(false)
+                .build();
+
         String output = compiler.generateJs(source);
         String htmlOutput = compiler.generateHtml(source);
 
