@@ -6,6 +6,7 @@ import org.github.jmorla.kiwicompiler.ast.SyntaxTree;
 import org.github.jmorla.kiwicompiler.visitor.SegmentVisitor;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,21 +19,35 @@ public final class KiwiGenerator {
         this.config = config;
     }
 
-    public record Configuration(boolean useDefaultImports) {
+    public record Configuration(
+            boolean useDefaultImports,
+            String baseImportPath,
+            boolean includeReactImports
+        ) {
     }
 
-    public static KiwiGenerator withDefault() {
-        return new KiwiGenerator(new Configuration(true));
+    public static KiwiGenerator withDefaults() {
+        return new KiwiGenerator(new Configuration(true, "./", true));
     }
 
     public static KiwiGeneratorBuilder with() {
         return new KiwiGeneratorBuilder();
     }
 
+    
+    public boolean constainsDirectives(Reader source) {
+        SyntaxTree tree = buildSyntaxTree(source);
+        return tree.constainsDirective();
+    }
+
+    private SyntaxTree buildSyntaxTree(Reader source) {
+        var tokens = new KiwiScanner(source).scanTokens();
+        return new KiwiParser(tokens).parse();
+    }
+
 
     public void generate(Reader source, Writer tOut, Writer jsOut) {
-        var tokens = new KiwiScanner(source).scanTokens();
-        var syntaxTree = new KiwiParser(tokens).parse();
+        var syntaxTree = buildSyntaxTree(source);
         compileHtml(syntaxTree, tOut);
         compileJs(syntaxTree, jsOut);
     }
@@ -56,8 +71,7 @@ public final class KiwiGenerator {
     }
 
     public void generateHtml(Reader source, Writer out) {
-        var tokens = new KiwiScanner(source).scanTokens();
-        var syntaxTree = new KiwiParser(tokens).parse();
+        SyntaxTree syntaxTree = buildSyntaxTree(source);
         compileHtml(syntaxTree, out);
     }
 
@@ -71,14 +85,26 @@ public final class KiwiGenerator {
 
     public static class KiwiGeneratorBuilder {
         private boolean useDefaultImports;
+        private String baseImportPath;
+        private boolean includeReactImports;
 
         public KiwiGeneratorBuilder defaultImports(boolean value) {
             this.useDefaultImports = value;
             return this;
         }
 
+        public KiwiGeneratorBuilder baseImportPath(String path) {
+            this.baseImportPath = path;
+            return this;
+        }
+
+        public KiwiGeneratorBuilder includeReactImports(boolean value) {
+            this.includeReactImports = value;
+            return this;
+        }
+
         public KiwiGenerator build() {
-            var config = new Configuration(useDefaultImports);
+            var config = new Configuration(useDefaultImports, baseImportPath, includeReactImports);
             return new KiwiGenerator(config);
         }
     }
@@ -92,7 +118,9 @@ public final class KiwiGenerator {
             this.config = config;
             out = new PrintWriter(writer);
             printGeneratedNote();
-            printReactImports();
+            if (config.includeReactImports) {
+                printReactImports();
+            }
         }
 
         @Override
@@ -110,7 +138,7 @@ public final class KiwiGenerator {
                 out.print(" }");
             }
             out.print(" from '");
-            out.print(n.hasSingleArg() ? "./" : n.arg1());
+            out.print(n.hasSingleArg() ? config.baseImportPath : Path.of(config.baseImportPath).resolve(n.arg1()).normalize());
             out.println("';");
         }
 
@@ -137,7 +165,7 @@ public final class KiwiGenerator {
             if (element.hasAttributes()) {
                 printProps(element.attributes());
             }
-            out.println("\tconst root = createRoot(element);");
+            out.println("\tconst root = ReactDOM.createRoot(element);");
             out.print("\troot.render(");
             out.print("<");
             out.print(element.identifier());
@@ -180,7 +208,7 @@ public final class KiwiGenerator {
 
         private void printReactImports() {
             out.println("import React from 'react';");
-            out.println("import { createRoot } from 'react-dom/client';");
+            out.println("import ReactDOM from 'react-dom/client';");
         }
 
         @Override
@@ -201,7 +229,7 @@ public final class KiwiGenerator {
             if (n.text().isBlank()) {
                 return;
             }
-            out.println(n.text());
+            out.println(n.text().trim());
         }
 
         @Override

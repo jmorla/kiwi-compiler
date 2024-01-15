@@ -1,6 +1,8 @@
 package org.github.jmorla.kiwicompiler.ast;
 
 
+import org.github.jmorla.kiwicompiler.ast.Segment.ImportDirective;
+import org.github.jmorla.kiwicompiler.ast.Segment.RenderDirective;
 import org.github.jmorla.kiwicompiler.visitor.SegmentVisitor;
 import org.github.jmorla.kiwicompiler.visitor.Visitable;
 
@@ -22,6 +24,21 @@ public class SyntaxTree implements Visitable {
         return empty;
     }
 
+    public boolean constainsDirective() {
+        if (segments == null) {
+            return false;
+        }
+        for (var segment : segments) {
+            if (segment instanceof RenderDirective) {
+                return true;
+            }
+            if (segment instanceof ImportDirective) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public List<Segment> segments() {
         return this.segments;
@@ -29,6 +46,9 @@ public class SyntaxTree implements Visitable {
 
     @Override
     public void accept(SegmentVisitor visitor) {
+        if (segments == null) {
+            return;
+        }
         for(var segment : segments) {
             segment.accept(visitor);
         }

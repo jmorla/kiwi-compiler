@@ -3,7 +3,6 @@ package org.github.jmorla.kiwicompiler;
 import org.github.jmorla.kiwicompiler.ast.*;
 
 
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashSet;
