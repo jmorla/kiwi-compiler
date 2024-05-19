@@ -12,8 +12,20 @@ Kiwi aims to streamline the process of incorporating React components into Java-
 
 ## Example
 
-
 ### source
+
+```jsx
+import React from 'react';
+
+export default function Greeting ({ message, value, clickable }) {
+	return (<div>
+		<p>Message: {message}</p>
+		<p>Value: {value || 0}</p>
+		<p>{`Is ${!clikable && "not"} clikable`}</p>
+	</div>);
+}
+```
+
 ```java
 var source = """
         @import('Greeting', './components/Greeting')
