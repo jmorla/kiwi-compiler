@@ -1,8 +1,8 @@
 
-# Kiwi React Generator
+# Kiwi Compiler
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
-Kiwi is a React code generator designed for Java template engines. It simplifies the integration of React components within Java-based applications. This README provides an overview of the Kiwi project, its purpose, and an example of its usage.
+Kiwi is a template engine precompiler that integrates React components into Java template engines. It simplifies the incorporation of React components within Java-based applications. This README provides an overview of the Kiwi project, its purpose, and an example of its usage.
 
 ## Overview
 
@@ -35,7 +35,7 @@ var source = """
         @render(<Greeting message="Hello Strange" clickable:bool="true" />)
         """;
 
-var generator = KiwiGenerator.withDefault();
+var generator = KiwiCompiler.withDefault();
 String output = generator.generateJs(source);
 String htmlOutput = generator.generateHtml(source);
 ```

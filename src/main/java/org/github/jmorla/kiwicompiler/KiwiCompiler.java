@@ -11,11 +11,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class KiwiGenerator {
+public final class KiwiCompiler {
 
     private final Configuration config;
 
-    private KiwiGenerator(Configuration config) {
+    private KiwiCompiler(Configuration config) {
         this.config = config;
     }
 
@@ -26,8 +26,8 @@ public final class KiwiGenerator {
         ) {
     }
 
-    public static KiwiGenerator withDefaults() {
-        return new KiwiGenerator(new Configuration(true, "./", true));
+    public static KiwiCompiler withDefaults() {
+        return new KiwiCompiler(new Configuration(true, "./", true));
     }
 
     public static KiwiGeneratorBuilder with() {
@@ -46,7 +46,7 @@ public final class KiwiGenerator {
     }
 
 
-    public void generate(Reader source, Writer tOut, Writer jsOut) {
+    public void compile(Reader source, Writer tOut, Writer jsOut) {
         var syntaxTree = buildSyntaxTree(source);
         compileHtml(syntaxTree, tOut);
         compileJs(syntaxTree, jsOut);
@@ -103,9 +103,9 @@ public final class KiwiGenerator {
             return this;
         }
 
-        public KiwiGenerator build() {
+        public KiwiCompiler build() {
             var config = new Configuration(useDefaultImports, baseImportPath, includeReactImports);
-            return new KiwiGenerator(config);
+            return new KiwiCompiler(config);
         }
     }
 
